@@ -11,10 +11,85 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('human_resources_app', function (Blueprint $table) {
+        Schema::create('employees', function (Blueprint $table) {
             $table->id();
+            $table->string('fullname');
+            $table->string('email')->unique();
+            $table->string('phone_number');
+            $table->string('address');
+            $table->date('birth_date');
+            $table->date('hire_date');
+            $table->foreignKey('department_id')->constrained('departments');
+            $table->foreignKey('role_id')->constrained('roles');
+            $table->string('status');
+            $table->decimal('salary', 10, 2);
             $table->timestamps();
+            $table->softDelates();
+
         });
+
+        Schema::create('departments', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('status');
+            $table->timestamps();
+            $table->softDelates();
+        });
+
+        Schema::create('roles', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->timestamps();
+            $table->softDelates();
+        });
+
+        Schema::create('tasks', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->foreignKey('assigned_to')->constrained('employees');
+            $table->date('due_date');
+            $table->string('status');
+            $table->timestamps();
+            $table->softDelates();
+        });
+
+        Schema::create('payroll', function (Blueprint $table) {
+            $table->id();
+            $table->foreignKey('employee_id')->constrained('employees');
+            $table->decimal('salary', 10, 2);
+            $table->decimal('bonuses', 10, 2)->nullable();
+            $table->decimal('deductions', 10, 2)->nullable();
+            $table->decimal('net_salary', 10, 2);
+            $table->date('pay_date');
+            $table->timestamps();
+            $table->softDelates();
+        });
+
+        Schema::create('presences', function (Blueprint $table) {
+            $table->id();
+            $table->foreignKey('employee_id')->constrained('employees');
+            $table->date('check_in');
+            $table->date('check_out');
+            $table->date('date');
+            $table->string('status');
+            $table->timestamps();
+            $table->softDelates();
+        });
+
+        Schema::create('leave_requests', function (Blueprint $table) {
+            $table->id();
+            $table->foreignKey('employee_id')->constrained('employees');
+            $table->string('leave_type');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->string('status');
+            $table->timestamps();
+            $table->softDelates();
+         });
+
     }
 
     /**
@@ -22,6 +97,13 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('human_resources_app');
+        Schema::dropIfExists('employees');
+        Schema::dropIfExists('departments');
+        Schema::dropIfExists('roles');
+        Schema::dropIfExists('tasks');
+        Schema::dropIfExists('payroll');
+        Schema::dropIfExists('presences');
+        Schema::dropIfExists('leave_requests');
+        
     }
 };
