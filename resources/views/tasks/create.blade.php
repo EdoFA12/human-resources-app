@@ -30,20 +30,31 @@
           <div class="card">
                <div class="card-header">
                     <h5 class="card-title">
-                         Data
+                         Created Tasks List
                     </h5>
                </div>
                <div class="card-body">
-                    <div class="d-flex">
-                         <a href="{{ route('tasks.create') }}" class="btn btn-primary mb-3 ms-auto">Add New Task</a>
-                    </div>
+                   
 
                     <form action="{{ route('tasks.store') }}" method="POST">
+                         @csrf
                          <div class="mb-3">
                               <label for="title" class="form-label">Title</label>
                               <input type="text" class="form-control" id="title" name="title" required>
                               @error('title')
                                <div class="invalid-feedback">{{ $message }}</div>     
+                              @enderror
+                         </div>
+                         <div class="mb-3">
+                              <label for="assigned_to" class="form-label">Employee</label>
+                              <select class="form-control @error('assigned_to') is-invalid @enderror" name="assigned_to" required>
+                                   <option value="">-- Select an Employee --</option>
+                                   @foreach ($employees as $employee)
+                                        <option value="{{ $employee->id }}">{{ $employee->fullname }}</option>
+                                   @endforeach
+                              </select>
+                              @error('assigned_to')
+                               <div class="invalid-feedback">{{ $message }}</div>
                               @enderror
                          </div>
                          <div class="mb-3">
@@ -56,8 +67,8 @@
                          <div class="mb-3">
                               <label for="status" class="form-label">Status</label>
                               <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                   <option value="pending" {{ old('status') == 'pending' ? 'selected' : '' }}>Pending</option>
-                                   <option value="done" {{ old('status') == 'done' ? 'selected' : '' }}>Done</option>
+                                   <option value="pending">Pending</option>
+                                   <option value="on-progress">On Progress</option>
                               </select>
                               @error('status')
                                <div class="invalid-feedback">{{ $message }}</div>     
@@ -71,6 +82,9 @@
                               @enderror
 
                          </div>
+
+                         <button type="submit" class="btn btn-primary">Submit</button>
+                         <a href="{{ route('tasks.index') }}" class="btn btn-secondary">Back to List</a>
                     </form>
                          
 
